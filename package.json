@@ -1,0 +1,23 @@
+{
+  "name": "team-quiz-server",
+  "version": "0.0.1",
+  "description": "The server for Team Quiz",
+  "repository": "https://github.com/marco-springer/team-quiz.git",
+  "license": "UNLICENSED",
+  "private": true,
+  "author": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "ava --serial --verbose"
+  },
+  "dependencies": {
+    "hl7-standard": "^1.0.2",
+    "lodash": "^4.17.15",
+    "simple-hl7": "^3.2.1",
+    "socket.io": "^2.3.0",
+    "uuid": "^7.0.3",
+    "windows-1252": "^1.0.0"
+  }
+}
