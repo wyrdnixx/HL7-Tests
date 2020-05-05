@@ -13,6 +13,7 @@
     "test": "ava --serial --verbose"
   },
   "dependencies": {
+    "ava": "^3.8.1",
     "hl7-standard": "^1.0.2",
     "lodash": "^4.17.15",
     "simple-hl7": "^3.2.1",

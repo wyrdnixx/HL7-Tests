@@ -1,7 +1,7 @@
 import net from 'net';
 import EventEmitter from 'events';
 import uuid from 'uuid';
-//import fs from 'fs';
+import fs from 'fs';
 import HL7 from 'hl7-standard';
 
 import eventbus from './eventbus.js';
@@ -9,6 +9,13 @@ import eventbus from './eventbus.js';
 
 class Server extends EventEmitter {
     clients = {};
+
+
+/**
+ * new Server instance
+ * @param Server listening port
+ * @param Server listening host adress
+ */
 
     constructor(_port, _host) {
         super();
@@ -26,7 +33,89 @@ class Server extends EventEmitter {
         this.server.on(
             'connection',
             (socket) => this.handleConnection(socket),
-        );        
+        ); 
+      /*   
+        this.on(
+            'testevent',
+            () => {
+                console.log('Srv Testevent');
+            }); */
+            this.on(
+                'hl7msg',  
+              (clientId,hl7,) => {
+                console.log('write message to file.')
+                
+                // MSH.6 =  Message Date
+                //fs.writeFile('./hl7/' + hl7.get('MSH.7') + '.hl7',hl7.build(), (err) => {
+                  fs.appendFile('./hl7/hl7log.log', '\n\n' + 'Got HL7:' + '\n' + hl7.build(), (err) => {
+                  if (err) {
+                    console.log('fs write file error: ', err.message);
+                    throw err;
+                  } else {
+                      console.log('The file has been saved!');
+                    }    
+                });
+                
+                this.emit('ACK',clientId, hl7);
+              
+              
+              });
+              
+              this.on(
+                'ACK',
+                (clientId, hl7) => {
+                  
+                  console.log('building ACK')
+                  let ack = new HL7();
+                  
+                  ack.createSegment('MSH');
+                  ack.set('MSH', {
+                    'MSH.2': '^~\\&',
+                    'MSH.3': hl7.get('MSH.5'), //MSH-3 Sendende Anwendung
+                    'MSH.4': hl7.get('MSH.4'),
+                    'MSH.5':  hl7.get('MSH.3'), // MSH-5 Empfangende Anwendung
+                    'MSH.6': '',
+                    'MSH.7': hl7.get('MSH.7'), //Message ID
+                    'MSH.8': '',
+                    'MSH.9': {
+                        'MSH.9.1': 'ACK',
+                        'MSH.9.2': hl7.get('MSH.9.2')
+                    },
+                    'MSH.10': hl7.get('MSH.10'),
+                    'MSH.11': hl7.get('MSH.11'),
+                    'MSH.12': hl7.get('MSH.12')
+                  });
+                  ack.createSegment('MSA');
+                  ack.set('MSA', {
+                    'MSA.1': 'CA',
+                    'MSA.2': hl7.get('MSH.10')
+                  });
+                   ack.createSegment('ERR');
+                   ack.set('ERR', {
+                     'ERR.2': 'myapp',
+                     'ERR.3': '207', // Errorcode - 207 = Application internal error	
+                     'ERR.4': 'E', // Error severity -> Error, Information, Warning
+                     'ERR.7': 'Trump denied it ' //Error-Text
+                   });
+               
+              
+                     // MSH.7 =  Message Date     
+              
+                 //fs.appendFile('./hl7/' + hl7.get('MSH.7') + '.hl7', '\n\n' + 'Sending ACK:' + '\n' + ack.build(), (err) => {
+                  fs.appendFile('./hl7/hl7log.log', '\n\n' + 'Sending ACK:' + '\n' + ack.build(), (err) => {
+                  if (err) {
+                    console.log('fs write file error: ', err.message);
+                    throw err;
+                  } else {
+                      console.log('The file has been saved!');
+                    }    
+                });
+               
+                    console.log(ack.getSegment('MSH'));
+                  this.sendData(clientId, ack.build());
+                  
+                }
+              )
     }
 
     handleConnection(_socket) {
@@ -52,6 +141,8 @@ class Server extends EventEmitter {
     receiveData(clientId, data) {
         console.log('Client: ', clientId);
         
+    /* this.emit('testevent') */
+
         // lösche windows Zeilenumbruch - nur für Consolen-Log benötigt.
         //let msg = _data.toString().replace(/\r/g, "");
         //console.log('cleaned data: ',  msg);   
@@ -137,6 +228,7 @@ checkHl7(data) {
  */  
 }
     
+
 
 }
 
