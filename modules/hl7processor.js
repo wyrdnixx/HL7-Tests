@@ -65,6 +65,8 @@ class hl7processor {
            'ERR.7': 'Trump denied it ' //Error-Text
          });
 
+         // Ack sollte noch in die File geschrieben werden.
+
          return ack;
     }
 
