@@ -1,12 +1,83 @@
 import EventEmitter from 'events';
 import isPlainObject from 'lodash/isPlainObject.js';
 import isString from 'lodash/isString.js';
+import HL7 from 'hl7-standard';
+import hl7processor from './hl7processor.js';
+import { timingSafeEqual } from 'crypto';
+import Server from './server.js';
 
 class EventBus extends EventEmitter {
+    
+    
+
     constructor() {
         super();
+
+        this.on('ACK', (clientId, message) => {
+            //console.log(message)
+            //hl7processor.emit('processMessage', clientId, message)
+
+            let ackmsg = hl7processor.createAck(message);            
+                
+                this.emit('sendData', clientId, ackmsg);                
+
+        })
+
     }
 
+
+    getMessage(clientId,message) {
+        try {
+            
+        const fields = message.toString().split('|');
+
+        console.log('Message Fields: ', fields.length)
+        var msg = message.toString();
+            // remove first ascii char, if ist VT - vertical Tab
+            if (msg[0].charCodeAt()  == 11 ) {
+                msg = msg.substring(1);
+            }
+        
+        let hl7 = new HL7(msg)
+        
+        hl7.transform(err => {
+
+            if (err) {
+                console.log('transorfmer errer: ', err.message);                
+            } else {
+                let familyName = hl7.get('PID.5.1');
+                console.log('checkHL7 got familyName: ', familyName);
+                
+                hl7processor.processMessage(clientId, hl7);
+                //console.log(typeof(hl7processor.processMessage));
+
+            }        
+          });   
+
+            
+
+        } catch (error) {
+            this.emit(
+                'error',
+                error,
+            );
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /////////////////////////////////////////
+    // Org von Marco
     consumeMessage(clientId, message) {
         try {
             let event;

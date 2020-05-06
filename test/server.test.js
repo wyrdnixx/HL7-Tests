@@ -67,7 +67,7 @@ test.cb('client connect to Server', (t) => {
 // bis jetzt nur reiner receive - hl7 Check muss noch rein
 test.cb('ACK hl7', (t) => {
 
-    console.log(client)
+    //console.log(client)
    client.on(
       'data',
       (data) => {
