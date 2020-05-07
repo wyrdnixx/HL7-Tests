@@ -22,7 +22,7 @@ class hl7processor {
             console.log('fs write file error: ', err.message);
             throw err;
           } else {
-              console.log('The file has been saved!');
+              //console.log('The file has been saved!');
             }    
         });
         
@@ -32,7 +32,7 @@ class hl7processor {
 
     createAck (hl7) {
 
-        console.log('building ACK')
+        //console.log('building ACK')
         let ack = new HL7();
         
         ack.createSegment('MSH');
@@ -66,7 +66,9 @@ class hl7processor {
          });
 
          // Ack sollte noch in die File geschrieben werden.
-
+         fs.appendFile('./hl7/hl7log.log', '\n\n' + 'ACK build:' + '\n' + ack.build(), (err) => {
+             if (err) console.log('File write error');
+         });
          return ack;
     }
 

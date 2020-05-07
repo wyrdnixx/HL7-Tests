@@ -71,8 +71,39 @@ test.cb('ACK hl7', (t) => {
    client.on(
       'data',
       (data) => {
-          console.log('receiving data: ', data.toString());
-          t.end();
+/*           console.log('receiving data: ', data.toString());
+        let ack = new HL7(data.toString()) */
+        
+        let testA01 = new HL7(testHL7A01);
+        let ack = new HL7(data.toString());
+
+        try {
+            
+            ack.transform();
+            testA01.transform();
+
+/*             console.log('testA01: ', testA01.get('MSH.2'));
+            console.log('ack: ', ack.get('MSH.2')); */
+
+            
+            t.is(ack.get('MSH.7'), testA01.get('MSH.7'),' MSH.7 Message ID incorrect')            
+            
+            t.is(ack.get('MSH.3'), testA01.get('MSH.5'),' MSH.3 and MSH.5 (Apps) not correct switched')
+            
+            t.is(ack.get('MSH.9.1'),'ACK',' MSH.9.1 is not ACK')
+
+            
+            t.end();
+
+           } catch (e) {
+             console.error('HL7 Transform error: ', e);
+             t.fail();
+           }
+
+
+          
+
+          
       }
       )
     //client.connect(testport, '127.0.0.1', function() {     

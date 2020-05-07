@@ -84,9 +84,9 @@ class Server extends EventEmitter {
         var FS = String.fromCharCode(0x1c);
         var CR = String.fromCharCode(0x0d);
 
-
-        this.clients[clientId].write(VT + data.toString() + FS + CR);
-        //(VT + (this.ack).toString() + FS + CR);
+        this.clients[clientId].write(data.toString());
+        //this.clients[clientId].write(VT + data.toString() + FS + CR);
+        
     }
 
 }
