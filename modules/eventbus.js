@@ -13,15 +13,15 @@ class EventBus extends EventEmitter {
     constructor() {
         super();
 
-        this.on('ACK', (clientId, message) => {
-            //console.log(message)
-            //hl7processor.emit('processMessage', clientId, message)
-
+        this.on('ACK', (clientId, message) => {            
             let ackmsg = hl7processor.createAck(message);            
-                
-                this.emit('sendData', clientId, ackmsg.build());                
+            this.emit('sendData', clientId, ackmsg.build());                
+        });
 
-        })
+        this.on('ACK-ERR', (clientId, message, errcode, errmessage) => {            
+            let ackmsg = hl7processor.createAckErr(message,errcode, errmessage);            
+            this.emit('sendData', clientId, ackmsg.build());                
+        });
 
     }
 
@@ -29,7 +29,7 @@ class EventBus extends EventEmitter {
     getMessage(clientId,message) {
         try {
             
-        const fields = message.toString().split('|');
+        //const fields = message.toString().split('|');
 
         //console.log('Message Fields: ', fields.length)
         var msg = message.toString();

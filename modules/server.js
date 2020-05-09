@@ -1,10 +1,11 @@
 import net from 'net';
 import EventEmitter from 'events';
 import uuid from 'uuid';
-import HL7 from 'hl7-standard';
-import fs from 'fs';
+//import HL7 from 'hl7-standard';
+//import fs from 'fs';
 import eventbus from './eventbus.js';
-import hl7processor from './hl7processor.js';
+//import hl7processor from './hl7processor.js';
+import db from './db.js';
 
 class Server extends EventEmitter {
     clients = {};
@@ -18,6 +19,9 @@ class Server extends EventEmitter {
 
     constructor(_port, _host) {
         super();
+
+
+        
 
         this.server = net.createServer();
 

@@ -16,9 +16,13 @@
     "ava": "^3.8.1",
     "hl7-standard": "^1.0.2",
     "lodash": "^4.17.15",
+    "mongodb": "^3.5.7",
     "simple-hl7": "^3.2.1",
     "socket.io": "^2.3.0",
     "uuid": "^7.0.3",
     "windows-1252": "^1.0.0"
+  },
+  "prettier": {
+    "editor.formatOnSave": true
   }
 }
