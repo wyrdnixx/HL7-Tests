@@ -43,15 +43,14 @@ class hl7processor {
 
 //        console.log(pat);
 
-        try {
+        
             db.dbAddPat(pat,(err) => {
-                if(err) eventBus.emit('ACK-ERR',clientId, hl7,'hl-errcode', `patient databse save error:${error}`);     
-                eventBus.emit('ACK',clientId, hl7);     
+                if(err) 
+                    eventBus.emit('ACK-ERR',clientId, hl7,'hl-errcode', `patient databse save error:${err}`);     
+                else 
+                    eventBus.emit('ACK',clientId, hl7);     
             });        
-        } catch (error) {
-            console.log('patient databse save error:', error)
-            
-        }
+        
 
         
 
@@ -94,12 +93,12 @@ class hl7processor {
         
         ack.createSegment('MSA');
         ack.set('MSA', {
-          'MSA.1': 'CA',
+          'MSA.1': 'AE',
           'MSA.2': hl7.get('MSH.10')
         });
          ack.createSegment('ERR');
          ack.set('ERR', {
-           'ERR.2': 'myapp',
+           'ERR.2': 'hl7TestApp',
            'ERR.3': errcode, 
            'ERR.4': 'E', // Error severity -> Error, Information, Warning
            'ERR.7': errmessage //Error-Text

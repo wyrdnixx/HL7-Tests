@@ -31,21 +31,28 @@ class db {
 
     }
 
-    dbAddPat (pat) {
+    dbAddPat (pat, done) {
 
         //console.log('in dbAddPat')
 
 
-
         MongoClient.connect(url &"1", function(err, db) {
-            if (err) throw err;
-            var dbo = db.db("hl7tests");
-            //var myobj = { name: "Company Inc", address: "Highway 37" };
-            dbo.collection("pat").insertOne(pat, function(err, res) {
-              if (err) callback(new Error(err));
-              console.log("1 document inserted");
-              db.close();
-            });
+            if (err) {
+                //console.log('db error: ',err.message)
+                return done (Error (`DB Connection error: ${ err.message} `));
+            }
+            else{
+
+                var dbo = db.db("hl7tests");
+                //var myobj = { name: "Company Inc", address: "Highway 37" };
+                dbo.collection("pat").insertOne(pat, function(err, res) {
+                    
+                    if (err) return done (Error ('DB insert error: ',err.message));
+                    else
+                        console.log("1 document inserted");
+                    db.close();
+                });
+            }            
           });    
     }
 
