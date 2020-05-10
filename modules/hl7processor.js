@@ -11,7 +11,7 @@ class hl7processor {
     constructor() {
     }
 
-    processMessage (clientId, hl7) {
+    processMessage (hl7,clientId) {
         //console.log('hl7processor got message: ', hl7)
 
         //console.log('write message to file.')
@@ -27,6 +27,21 @@ class hl7processor {
             }    
         });
         
+        //console.log(hl7.get('MSH.9.2'))
+
+        switch (hl7.get('MSH.9.2')) {
+            case 'A01':
+                this.hl7ADT_A01(hl7,clientId)
+                break;
+        
+            default:
+                eventBus.emit('ACK-ERR', clientId, hl7, 200,'Message type not supported by application.' )
+                break;
+        }
+    }
+
+
+    hl7ADT_A01(hl7, clientId) {
 
         let pat = new Patient();
                 
@@ -46,6 +61,7 @@ class hl7processor {
         
             db.dbAddPat(pat,(err) => {
                 if(err) {
+                    
                     eventBus.emit('ACK-ERR',clientId, hl7,'hl-errcode', `patient databse save error:${err}`);     
                 }
                 else {
@@ -55,16 +71,16 @@ class hl7processor {
             });        
         
 
-        
-
     }
+
 
     createAck (hl7) {
 
         //console.log('building ACK')
         //let ack = new HL7();
         
-        let ack = this.createMSH(hl7, new HL7());        
+        let ack = this.createMSH(hl7, new HL7());   
+
         ack.createSegment('MSA');
         ack.set('MSA', {
           'MSA.1': 'CA',
@@ -89,7 +105,7 @@ class hl7processor {
 
     createAckErr (hl7, errcode,errmessage) {
 
-        errcode = 207 // Errorcode - 207 = Application internal error	
+        //errcode = 207 // Errorcode - 207 = Application internal error	
 
 
 
@@ -102,14 +118,14 @@ class hl7processor {
         });
          ack.createSegment('ERR');
          ack.set('ERR', {
-           'ERR.2': 'hl7TestApp',
-           'ERR.3': errcode, 
-           'ERR.4': 'E', // Error severity -> Error, Information, Warning
-           'ERR.7': errmessage //Error-Text
+           'ERR.1': 'hl7TestApp',
+           'ERR.2': errcode, 
+           'ERR.3': 'E', // Error severity -> Error, Information, Warning
+           'ERR.4': errmessage //Error-Text
          });
 
          // Ack sollte noch in die File geschrieben werden.
-         fs.appendFile('./hl7/hl7log.log', '\n\n' + 'ACK build:' + '\n' + ack.build(), (err) => {
+         fs.appendFile('./hl7/hl7log.log', '\n\n' + 'ACK-ERR build:' + '\n' + ack.build(), (err) => {
              if (err) console.log('File write error');
          });
          return ack;
@@ -128,7 +144,8 @@ class hl7processor {
           'MSH.8': '',
           'MSH.9': {
               'MSH.9.1': 'ACK',
-              'MSH.9.2': hl7.get('MSH.9.2')
+               'MSH.9.2': hl7.get('MSH.9.2'),
+              /*'MSH.9.3': 'ACK', */
           },
           'MSH.10': hl7.get('MSH.10'),
           'MSH.11': hl7.get('MSH.11'),

@@ -24,7 +24,7 @@ class db {
           var dbo = db.db(database);
           dbo.createCollection(collection, function(err, res) {
             if (err) throw err;
-            console.log("Collection created!");
+            //console.log("Collection created!");
             db.close();
           });
         });
@@ -49,7 +49,7 @@ class db {
                     
                     if (err) return done (Error ('DB insert error: ',err.message));
                     else
-                        console.log("1 document inserted");
+                       // console.log("1 document inserted");
                     db.close();
                     return done (null);
                 });                

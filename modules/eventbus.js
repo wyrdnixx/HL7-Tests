@@ -18,7 +18,9 @@ class EventBus extends EventEmitter {
             this.emit('sendData', clientId, ackmsg.build());                
         });
 
-        this.on('ACK-ERR', (clientId, message, errcode, errmessage) => {            
+        this.on('ACK-ERR', (clientId, message, errcode, errmessage) => {    
+            
+            //console.log('ACK-ERR: ', errmessage)
             let ackmsg = hl7processor.createAckErr(message,errcode, errmessage);            
             this.emit('sendData', clientId, ackmsg.build());                
         });
@@ -32,6 +34,12 @@ class EventBus extends EventEmitter {
         //const fields = message.toString().split('|');
 
         //console.log('Message Fields: ', fields.length)
+
+        var VT = String.fromCharCode(0x0b);
+        var FS = String.fromCharCode(0x1c);
+        var CR = String.fromCharCode(0x0d);
+
+
         var msg = message.toString();
             // remove first ascii char, if ist VT - vertical Tab
             if (msg[0].charCodeAt()  == 11 ) {
@@ -44,12 +52,13 @@ class EventBus extends EventEmitter {
         hl7.transform(err => {
 
             if (err) {
-                console.log('transorfmer errer: ', err.message);                
+                console.log('transorfmer errer: ', err.message);
+                this.emi('ACL-ERR', clientId, message, '207', err.message)                
             } else {
                 let familyName = hl7.get('PID.5.1');
                 //console.log('checkHL7 got familyName: ', familyName);
                 
-                hl7processor.processMessage(clientId, hl7);
+                hl7processor.processMessage(hl7, clientId);
                 //console.log(typeof(hl7processor.processMessage));
 
             }        
