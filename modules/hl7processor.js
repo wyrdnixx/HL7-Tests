@@ -45,10 +45,13 @@ class hl7processor {
 
         
             db.dbAddPat(pat,(err) => {
-                if(err) 
+                if(err) {
                     eventBus.emit('ACK-ERR',clientId, hl7,'hl-errcode', `patient databse save error:${err}`);     
-                else 
+                }
+                else {
+                    console.log('hl7Processor sending ACK')
                     eventBus.emit('ACK',clientId, hl7);     
+                }
             });        
         
 
@@ -67,13 +70,14 @@ class hl7processor {
           'MSA.1': 'CA',
           'MSA.2': hl7.get('MSH.10')
         });
-         ack.createSegment('ERR');
+        // ERR nicht mehr im ACK -> jetzt in createAckErr
+       /*   ack.createSegment('ERR');
          ack.set('ERR', {
            'ERR.2': 'myapp',
            'ERR.3': '207', // Errorcode - 207 = Application internal error	
            'ERR.4': 'E', // Error severity -> Error, Information, Warning
            'ERR.7': 'Trump denied it ' //Error-Text
-         });
+         }); */
 
          // Ack sollte noch in die File geschrieben werden.
          fs.appendFile('./hl7/hl7log.log', '\n\n' + 'ACK build:' + '\n' + ack.build(), (err) => {
