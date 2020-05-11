@@ -33,9 +33,6 @@ class db {
 
     dbAddPat (pat, done) {
 
-        //console.log('in dbAddPat')
-
-
         MongoClient.connect(url, function(err, db) {
             if (err) {
                 //console.log('db error: ',err.message)
