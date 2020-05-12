@@ -23,19 +23,19 @@ class pattask {
         pat.plz         =hl7.get('PID.11.5')
         pat.country     =hl7.get('PID.11.6')
 
-//        console.log(pat); 
+//        console.log(pat);  
 
         
-            db.dbAddPat(pat,(err) => {
+            db.dbAddPat(pat,(err, errcode) => {
                 if(err) {
-                    
-                    eventBus.emit('ACK-ERR',clientId, hl7,'hl-errcode', `patient databse save error:${err}`);     
+                   // console.log('hl7Processor sending ACK-ERR: ', err)
+                    eventBus.emit('ACK-ERR',clientId, hl7,errcode, `patient database save error:${err}`);     
                 }
                 else {
-                    console.log('hl7Processor sending ACK')
+                    //console.log('hl7Processor sending ACK')
                     eventBus.emit('ACK',clientId, hl7);     
                 }
-            });        
+            });         
         
 
     }

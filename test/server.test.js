@@ -73,7 +73,7 @@ test.cb('client connect to Server', (t) => {
 
 
 // bis jetzt nur reiner receive - hl7 Check muss noch rein
-test.cb('ACK hl7', (t) => {
+test.cb('ACK correct hl7', (t) => {
     let testmessage = testHL7A01;
     //console.log(client)
    client.on(
@@ -101,6 +101,7 @@ test.cb('ACK hl7', (t) => {
             t.is(ack.get('MSH.7'), testA01.get('MSH.7'),' MSH.7 Message ID incorrect')                        
             t.is(ack.get('MSH.3'), testA01.get('MSH.5'),' MSH.3 and MSH.5 (Apps) not correct switched')            
             t.is(ack.get('MSH.9.1'),'ACK',' MSH.9.1 is not ACK')
+            t.is(ack.getSegment('ERR'), null, `ERR-Segement present: ${ack.get('ERR.4')}`)
             
             t.end();
 
@@ -154,6 +155,45 @@ test.cb('ACK-ERR unsupported', (t) => {
     
 }); 
 
+test.cb('ACK-ERR dupplicate patient', (t) => {
+    let testmessage = testHL7A01;
+    
+    //console.log(client)
+   client.on(
+      'data',
+      (data) => {
+        
+        
+        var receivedData = data.toString();
+        // remove first ascii char, if ist VT - vertical Tab
+        if (receivedData[0].charCodeAt()  == 11 ) {
+            receivedData = receivedData.substring(1);
+        }
+
+        let msg = new HL7(testmessage);
+        let ack = new HL7(receivedData);
+
+        try {
+            
+            ack.transform();
+            msg.transform();
+
+            t.is(ack.get('MSH.7'), msg.get('MSH.7'),' MSH.7 Message ID incorrect')                        
+            t.is(ack.get('MSH.3'), msg.get('MSH.5'),' MSH.3 and MSH.5 (Apps) not correct switched')            
+            t.is(ack.get('ERR.2'),'205','ERROR code not correct')            
+            t.is(ack.get('ERR.4'), 'patient database save error:Error: Patient allready exists',`ERROR Message not correct:  ${ack.get('ERR.4')}`)
+            
+            t.end();
+
+           } catch (e) {
+             console.error('HL7 Transform error: ', e);
+             t.fail();
+           }          
+      }
+      )    
+    client.write(testmessage); 
+    
+}); 
 
 
 test.after(() => {

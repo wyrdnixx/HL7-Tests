@@ -13,15 +13,15 @@ class EventBus extends EventEmitter {
     constructor() {
         super();
 
-        this.on('ACK', (clientId, message) => {            
-            let ackmsg = hl7processor.createAck(message);            
+        this.on('ACK', (clientId, hl7) => {            
+            let ackmsg = hl7processor.createAck(hl7);            
             this.emit('sendData', clientId, ackmsg.build());                
         });
 
-        this.on('ACK-ERR', (clientId, message, errcode, errmessage) => {    
+        this.on('ACK-ERR', (clientId, hl7, errcode, errmessage) => {    
             
             //console.log('ACK-ERR: ', errmessage)
-            let ackmsg = hl7processor.createAckErr(message,errcode, errmessage);            
+            let ackmsg = hl7processor.createAckErr(hl7,errcode, errmessage);            
             this.emit('sendData', clientId, ackmsg.build());                
         });
 
