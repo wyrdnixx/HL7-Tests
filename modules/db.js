@@ -50,11 +50,7 @@ class db {
                 var checkpat = {
                     "pat" : pat['pat']
                     }
-                    
                 
-                   // console.log(checkpat)
-                
-
                    dbo.collection(collection).find(checkpat).toArray(function(err, result) {
                     if (err) {
                         eventBus.emit('ACK-ERR',clientId, hl7,207, `database connection error:${err}`);

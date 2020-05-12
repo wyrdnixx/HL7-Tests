@@ -10,9 +10,9 @@ class pattask {
 
     hl7ADT_A01 (hl7, clientId) {
 
-        let pat = new Patient();
-                
-        pat.per         =hl7.get('PID.2')
+        let pat = new Patient(hl7);
+                // verschobe in constructor
+/*         pat.per         =hl7.get('PID.2')
         pat.pat         =hl7.get('PID.4')        
         pat.gebdat      =hl7.get('PID.7')
         pat.surname     =hl7.get('PID.5.1')
@@ -22,7 +22,7 @@ class pattask {
         pat.city        =hl7.get('PID.11.3')
         pat.plz         =hl7.get('PID.11.5')
         pat.country     =hl7.get('PID.11.6')
-
+ */
 //        console.log(pat);  
 
         
