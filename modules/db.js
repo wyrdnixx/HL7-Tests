@@ -25,11 +25,12 @@ class db {
           if (err)  throw err;
 
           var dbo = db.db(database);
+          
           dbo.createCollection(collection, function(err, res) {
-            if (err) throw err;
-            //console.log("Collection created!");
-            db.close();
-          });
+            if (err) throw err;          
+          });          
+
+          db.close();
         });
 
     }
@@ -45,23 +46,19 @@ class db {
             else{
 
                 var dbo = db.db(database);
-                //var myobj = { name: "Company Inc", address: "Highway 37" };
-
+               
                 var checkpat = {
                     "pat" : pat['pat']
                     }
                 
-                   dbo.collection(collection).find(checkpat).toArray(function(err, result) {
+                   dbo.collection(collection).find(checkpat).toArray(function(err, patfound) {
                     if (err) {
                         eventBus.emit('ACK-ERR',clientId, hl7,207, `database connection error:${err}`);
                         return done;
-                    }
-                    //return done (Error ('DB checkpat error: ',err.message));
+                    }                    
                     
-                    if (result.length != '0' ) {
-                        //console.log('patient doppelt: ', result.length)
-                        
-                        // errorcode 205 = duppölicate key identifier
+                    if (patfound.length != '0' ) {
+                     
                         return done (Error ('Patient allready exists'), 205);
                         
                     } else {
@@ -69,17 +66,15 @@ class db {
                     
                             if (err) {
                                 // errorcode 207 = Application internal errer
-                                return done (Error ('database connection error'), 207);                                
-                            }
+                                return done (Error ('database error on pat insert'), 207);                                
+                            }                               
                             
-                            else
-                               // console.log("1 document inserted");
-                            db.close();
-                            return done (null);
                         }); 
+
                     }
                     //console.log(result);
                     db.close();
+                    return done (null);
                   });
 
 
@@ -89,7 +84,88 @@ class db {
           
     }
 
-    
+
+    dbupdateVisit(pat, done) {
+        
+        console.log("update visit")
+        MongoClient.connect(url, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db(database);
+            var myquery = { pat: pat.pat };
+            //var myquery = { pat: "1234" };
+            var newvalues = { $set: {station: pat.station, facility: pat.facility } };
+         
+          
+             dbo.collection(collection).find(myquery).toArray(function(err, patfound) {
+              if (err) {                  
+                  return done (Error (`database connection error:${err}`), 207);                                                    
+              } else if (patfound.length != 1)  {
+
+                return done (Error (`pat not found: ${pat.pat}`), 204);                
+              } else {
+              
+                dbo.collection(collection).updateOne(myquery, newvalues, function(err, res) {
+                  if (err) {
+                    console.log(err.message)
+                    db.close();
+                    return done (Error (`database connection error:${err}`), 207);                                                    
+                                       
+                  }else {
+                    //console.log("Updated fields: ", res.result.nModified);
+
+                    if(res.result.nModified != 1) {
+                      db.close();
+                      return done (Error (`pat update error : pat ${pat.pat} - Modified fields: ${res.result.nModified}`), 204);                      
+                    } else {
+                      return done (null);                      
+                      
+                    }
+                    
+                    
+                  }
+                  
+                }); 
+              }
+
+            });
+
+            
+          });
+
+
+
+    }
+
+    // work in progress
+    dbdischarge(pat, done) {
+        
+      console.log("discharge visit")
+     /*  MongoClient.connect(url, function(err, db) {
+          if (err) throw err;
+          var dbo = db.db(database);
+          //var myquery = { pat: pat.pat };
+          var myquery = { pat: "1234" };
+          var newvalues = { $set: {station: pat.station, facility: pat.facility } };
+
+          //console.log(myquery)
+          //console.log(newvalues)
+
+          dbo.collection(collection).updateOne(myquery, newvalues, function(err, res) {
+            if (err) {
+              db.close();
+              console.log(err)
+              return done (Error (`database error on pat update: ${err.message}`), 207);                                
+            }else {
+              db.close();
+              return done (null);
+            }
+            
+          });
+        }); */
+
+
+
+  }
 
 }
 
