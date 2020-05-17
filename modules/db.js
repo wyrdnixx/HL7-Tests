@@ -93,7 +93,21 @@ class db {
             var dbo = db.db(database);
             var myquery = { pat: pat.pat };
             //var myquery = { pat: "1234" };
-            var newvalues = { $set: {station: pat.station, facility: pat.facility } };
+            var newvalues = { $set: 
+              {                
+                per        : pat.per,
+                gebdat     : pat.gebdat,
+                surname    : pat.surname,
+                givenname  : pat.gvenname,
+                sex        : pat.sex,
+                street     : pat.street,
+                city       : pat.city,
+                plz        : pat.plz,
+                country    : pat.country,
+                station    : pat.station,
+                facility   : pat.facility
+              } 
+            };
          
           
              dbo.collection(collection).find(myquery).toArray(function(err, patfound) {

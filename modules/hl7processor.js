@@ -37,8 +37,8 @@ class hl7processor {
                 break;
           // patient transfer
           case 'A02':
-            console.log("A02 Nachricht")
-                pattask.hl7ADT_A02(hl7,clientId)
+            //console.log("A02 Nachricht")
+                pattask.hl7ADT_Update(hl7,clientId)
                 break;
           // patient discharge
           case 'A03':
@@ -52,8 +52,8 @@ class hl7processor {
                 break;
           // patient information update
           case 'A08':
-          //  pattask.hl7ADT_A01(hl7,clientId)
-          eventBus.emit('ACK-ERR', clientId, hl7, 200,'A08 not jet implemented' )
+            pattask.hl7ADT_Update(hl7,clientId)
+            //eventBus.emit('ACK-ERR', clientId, hl7, 200,'A08 not jet implemented' )
                 break;
           default:
                 eventBus.emit('ACK-ERR', clientId, hl7, 200,'Message type not supported by application.' )

@@ -25,7 +25,7 @@ class pattask {
         
 
     }
-    hl7ADT_A02 (hl7, clientId) {
+    hl7ADT_Update (hl7, clientId) {
 
         let pat = new Patient(hl7);
         
