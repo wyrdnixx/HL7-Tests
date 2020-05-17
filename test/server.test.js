@@ -29,6 +29,15 @@ EVN|A01|20200405171912|
 PID||21539741|21539741|10000000|xSURNAMENAME^XGIVENNAME||20070528|F|||ExampleStreet. 39B^^ExampleCity^^PLZ00^D|09776116|08382-6388|||||||||||N|
 PV1||I|F-1^^^F-PG10||200018516||||||F-1-F-PG10|||||||S|200018516||K||||||||||||||||||93795|||||20200405171800|||||0|200018516|`;
 
+
+let testHL7A08 = `MSH|^~\&|DPS||HUS||202004051719||ADT^A08|14090640|P|2.2|||AL|NE|
+EVN|A01|20200405171912|
+PID||21539741|21539741|200018516|MSurname^MGivenname||20070528|F|||ExampleBlock. 1^^City17^^PLZ17^D|09776116|08382-6388|||||||||||N|
+PV1||I|F-1^^^F-PG10||200018516||||||F-1-F-PG10|||||||S|200018516||K||||||||||||||||||93795|||||20200405171800|||||0|200018516|`;
+
+
+
+
 test.before.cb((t) => {
     server = new Server(testport, '0.0.0.0');
     client = new net.Socket();
@@ -287,6 +296,46 @@ test.cb('ACK-ERR dupplicate patient', (t) => {
     
 }); 
 
+
+test.cb('A08 pat data update' ,(t) => {
+    let testmessage = testHL7A08;
+    
+    //console.log(client)
+   client.on(
+      'data',
+      (data) => {
+        
+        
+        var receivedData = data.toString();
+        // remove first ascii char, if ist VT - vertical Tab
+        if (receivedData[0].charCodeAt()  == 11 ) {
+            receivedData = receivedData.substring(1);
+        }
+
+        let msg = new HL7(testmessage);
+        let ack = new HL7(receivedData);
+
+        try {
+            
+            ack.transform();
+            msg.transform();
+
+            t.is(ack.get('MSH.7'), msg.get('MSH.7'),' MSH.7 Message ID incorrect')                        
+            t.is(ack.get('MSH.3'), msg.get('MSH.5'),' MSH.3 and MSH.5 (Apps) not correct switched')                        
+            t.is(ack.get('MSH.9.1'),'ACK',' MSH.9.1 is not ACK')
+            t.is(ack.get('MSH.9.2'),msg.get('MSH.9.2'),' MSH.9.2 Messagetype is not correct A02')
+            t.is(ack.getSegment('ERR'), null, `ERR-Segement present: ${ack.get('ERR.4')}`)
+            t.end();
+
+           } catch (e) {
+             console.error('HL7 Transform error: ', e);
+             t.fail();
+           }          
+      }
+      )    
+    client.write(testmessage); 
+
+});
 
 test.after(() => {
     
