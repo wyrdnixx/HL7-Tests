@@ -150,37 +150,38 @@ class db {
 
     }
 
-    // work in progress
+    
     dbdischarge(pat, done) {
         
       console.log("discharge visit")
-     /*  MongoClient.connect(url, function(err, db) {
+       MongoClient.connect(url, function(err, db) {
           if (err) throw err;
           var dbo = db.db(database);
-          //var myquery = { pat: pat.pat };
-          var myquery = { pat: "1234" };
-          var newvalues = { $set: {station: pat.station, facility: pat.facility } };
+          var myquery = { pat: pat.pat, per :pat.per };
+          
+          dbo.collection(collection).find(myquery).toArray(function(err, patfound) {
+            if (err) {                  
+                return done (Error (`database connection error:${err}`), 207);                                                    
+            } else if (patfound.length != 1)  {
+              console.log(` ${patfound}`)
+              return done (Error (`pat not found: ${pat.pat}`), 204);                
+            } else {
 
-          //console.log(myquery)
-          //console.log(newvalues)
-
-          dbo.collection(collection).updateOne(myquery, newvalues, function(err, res) {
-            if (err) {
-              db.close();
-              console.log(err)
-              return done (Error (`database error on pat update: ${err.message}`), 207);                                
-            }else {
-              db.close();
-              return done (null);
-            }
-            
+              
+              dbo.collection(collection).deleteOne(myquery, function(err, res) {
+                if (err) {
+                  db.close();
+                  console.log(err)
+                  return done (Error (`database error on pat discharge: ${err.message}`), 207);                                
+                }else {
+                  db.close();
+                  return done (null);
+                }
+              });
+            }}); 
           });
-        }); */
-
-
-
-  }
-
+    }
+  
 }
 
 export default new db();

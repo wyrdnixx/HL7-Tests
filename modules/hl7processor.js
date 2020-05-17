@@ -42,8 +42,8 @@ class hl7processor {
                 break;
           // patient discharge
           case 'A03':
-                //pattask.hl7ADT_A03(hl7,clientId)
-                eventBus.emit('ACK-ERR', clientId, hl7, 200,'A03 not jet implemented' )
+                pattask.hl7ADT_A03(hl7,clientId)
+                //eventBus.emit('ACK-ERR', clientId, hl7, 200,'A03 not jet implemented' )
                 break;
           // patient registration
           case 'A04':
