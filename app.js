@@ -10,8 +10,7 @@ import fs from 'fs';
 
 
 // simple-hl7 Server
-
-var app = simplehl7.tcp();
+/* var app = simplehl7.tcp();
 
 app.use(function(req, res, next) {
   //req.msg is the HL7 message
@@ -31,11 +30,11 @@ app.use(function(req, res, next){
 })
 
 app.start(8081);
+ */
 
 
-///////////////////
 
-
+/////////////////// - Full HL7 Server
 
 const server = new Server(8080,'0.0.0.0');
 

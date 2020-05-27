@@ -32,30 +32,33 @@ class hl7processor {
         switch (hl7.get('MSH.9.2')) {
           // Patient admit  
           case 'A01':
-            console.log("A01 Nachricht")
+                console.log("A01 : Admit")
                 pattask.hl7ADT_A01(hl7,clientId)
                 break;
           // patient transfer
           case 'A02':
-            //console.log("A02 Nachricht")
+                console.log("A02 : Transfer")
                 pattask.hl7ADT_Update(hl7,clientId)
                 break;
           // patient discharge
           case 'A03':
+                console.log("A03 : Discharge")
                 pattask.hl7ADT_A03(hl7,clientId)
                 //eventBus.emit('ACK-ERR', clientId, hl7, 200,'A03 not jet implemented' )
                 break;
           // patient registration
           case 'A04':
-          //      pattask.hl7ADT_A01(hl7,clientId)
-          eventBus.emit('ACK-ERR', clientId, hl7, 200,'A04 not jet implemented' )
+                console.log("A04 : register")
+                eventBus.emit('ACK-ERR', clientId, hl7, 200,'A04 not jet implemented' )
                 break;
           // patient information update
           case 'A08':
-            pattask.hl7ADT_Update(hl7,clientId)
-            //eventBus.emit('ACK-ERR', clientId, hl7, 200,'A08 not jet implemented' )
+                console.log("A08 : update")
+                pattask.hl7ADT_Update(hl7,clientId)
+                //eventBus.emit('ACK-ERR', clientId, hl7, 200,'A08 not jet implemented' )
                 break;
           default:
+                console.log("A0x : not implemented")  
                 eventBus.emit('ACK-ERR', clientId, hl7, 200,'Message type not supported by application.' )
                 break;
         }
