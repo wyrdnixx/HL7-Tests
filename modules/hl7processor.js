@@ -95,7 +95,12 @@ class hl7processor {
          return ack;
     }
 
-
+/**
+ * create ACK with error codes
+ * @param {hl7} hl7 original hl7 message
+ * @param {*} errcode nummeric error code
+ * @param {*} errmessage error text
+ */
     createAckErr (hl7, errcode,errmessage) {
 
         //errcode = 207 // Errorcode - 207 = Application internal error	
@@ -113,7 +118,7 @@ class hl7processor {
          ack.set('ERR', {
            'ERR.1': 'hl7TestApp',
            'ERR.2': errcode, 
-           'ERR.3': 'E', // Error severity -> Error, Information, Warning
+           'ERR.3': "W", // Error severity -> Error, Information, Warning
            'ERR.4': errmessage //Error-Text
          });
 
