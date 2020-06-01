@@ -111,16 +111,39 @@ class hl7processor {
         
         ack.createSegment('MSA');
         ack.set('MSA', {
-          'MSA.1': 'AE',
+          'MSA.1': 'AA',
           'MSA.2': hl7.get('MSH.10')
         });
          ack.createSegment('ERR');
-         ack.set('ERR', {
+        /*  ack.set('ERR', {
            'ERR.1': 'hl7TestApp',
            'ERR.2': errcode, 
            'ERR.3': "W", // Error severity -> Error, Information, Warning
            'ERR.4': errmessage //Error-Text
          });
+ */
+
+        ack.set('ERR', {
+          'ERR.1': 'hl7TestApp',
+          'ERR.2': 'PID^1^4', 
+          'ERR.3': errcode + '^LogicErr', 
+          //'ERR.3.2': "LogicErr", // Error severity -> Error, Information, Warning
+          'ERR.4': "W",
+          'ERR.5': "PatErr",
+          'ERR.8': errmessage //Error-Text
+        });
+        
+        /* ERR|
+        1|
+        2-PID^1^11^5|
+        3-999^Application error^HL70357|
+        4-W|
+        5-1^illogicaldate error^HL70533|
+        6-|
+        7-|
+        8-12345 is not a valid zip code in MYIIS */
+
+
 
          // Ack sollte noch in die File geschrieben werden.
          fs.appendFile('./hl7/hl7log.log', '\n\n' + 'ACK-ERR build:' + '\n' + ack.build(), (err) => {
