@@ -15,7 +15,7 @@
   "dependencies": {
     "ava": "^3.8.1",
     "hl7-standard": "^1.0.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "mongodb": "^3.5.7",
     "simple-hl7": "^3.2.1",
     "socket.io": "^2.3.0",
